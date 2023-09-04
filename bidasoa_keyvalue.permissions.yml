@@ -1,0 +1,4 @@
+#Define the administer permission for the keyvalue config entity.
+'administer keyvalue':
+  title: 'Administer literals'
+  description: Create and edit literals.

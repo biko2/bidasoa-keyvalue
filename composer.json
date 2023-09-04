@@ -1,0 +1,8 @@
+{
+    "name": "biko2/bidasoa_keyvalue",
+    "description": "Bidasoa keyvValue module",
+    "require": {
+        "php": ">=8.1"
+    },
+    "type": "drupal-module"
+}

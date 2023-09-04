@@ -1,0 +1,14 @@
+# Add some local task links to facilitate navigation.
+
+bidasoa_keyvalue.add_action:
+  route_name: entity.keyvalue.add_form
+  title: 'Add literal'
+  appears_on:
+    - entity.keyvalue.list
+
+bidasoa_keyvalue.list_action:
+  route_name: entity.keyvalue.list
+  title: 'List literals'
+  appears_on:
+    - entity.keyvalue.add_form
+    - entity.keyvalue.edit_form

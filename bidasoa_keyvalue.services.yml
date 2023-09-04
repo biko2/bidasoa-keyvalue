@@ -1,0 +1,13 @@
+services:
+  bidasoa_keyvalue.config_translation_form_subscribers:
+    class: Drupal\bidasoa_keyvalue\EventSubscriber\ConfigTranslationFormEventSubscribers
+    tags:
+    - { name: event_subscriber }
+  bidasoa_keyvalue.language_modified_event_subscriber_override:
+    class: Drupal\bidasoa_keyvalue\EventSubscriber\LanguageModifiedEventSubscriberOverride
+    arguments: [ "@config.factory", "@event_dispatcher" ]
+    tags:
+      - { name: event_subscriber }
+  bidasoa_keyvalue.translator:
+    class: Drupal\bidasoa_keyvalue\Services\BidasoaKeyValueTranslatorService
+    arguments: ['@entity_type.manager','@language_manager', '@config.factory', '@config.storage', '@cache.config']

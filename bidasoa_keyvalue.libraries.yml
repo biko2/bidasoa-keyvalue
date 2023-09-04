@@ -1,0 +1,8 @@
+bidasoa_keyvalue.search:
+  version: 1.0
+  js:
+    js/bidasoa_keyvalue.search.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+

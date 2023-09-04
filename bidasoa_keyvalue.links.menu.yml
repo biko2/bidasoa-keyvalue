@@ -1,0 +1,13 @@
+bidasoa_keyvalue.menu:
+  title: Literals
+  route_name: entity.keyvalue.list
+  description: 'Manage literal translations'
+  parent: system.admin_config_regional
+bidasoa_keyvalue.menu.editors:
+  title: Translate literals
+  route_name: entity.keyvalue.list
+  description: 'Manage literal translations'
+  parent: bidasoa_admin.admin
+  weight: 100
+
+

@@ -1,0 +1,16 @@
+bidasoa_keyvalue.keyvalue.*:
+  type: config_entity
+  label: 'KeyValue'
+  mapping:
+    id:
+      type: string
+      label: 'KeyValue id'
+    uuid:
+      type: string
+      label: 'UUID'
+    label:
+      type: label
+      label: 'Label'
+    langcode:
+      type: string
+      label: 'Default language'
