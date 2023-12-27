@@ -3,6 +3,9 @@
 namespace Drupal\bidasoa_keyvalue\Plugin\static_export\Exporter\Locale;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Config\CachedStorage;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\static_export\Exporter\Output\Config\ExporterOutputConfigInterface;
 use Drupal\static_export\Exporter\Type\Locale\LocaleExporterPluginBase;
 use Drupal\static_suite\StaticSuiteUserException;
@@ -18,6 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
+  private $CONFIG_PREFIX = "bidasoa_keyvalue.keyvalue";
 
   /**
    * Language Manager.
@@ -25,9 +29,12 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
    * @var \Drupal\Core\Language\LanguageManager
    */
   protected $languageManager;
-
   protected $mustRequestBuild = TRUE;
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
+  protected CachedStorage $configManager;
+
+
+
   /**
    * {@inheritdoc}
    */
@@ -35,6 +42,7 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->languageManager = $container->get("language_manager");
     $instance->entityTypeManager = $container->get("entity_type.manager");
+    $instance->configManager = $container->get('config.storage');
     return $instance;
   }
 
@@ -117,28 +125,60 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
    * Get key_value data.
    */
   protected function calculateDataFromResolver() {
-    $configFactory = \Drupal::service('config.factory');
-    /* @var \Drupal\Core\Config\CachedStorage $configManager*/
-    $configManager = \Drupal::service('config.storage');
-    $configNames = $configManager->listAll('bidasoa_keyvalue.keyvalue');
+    $configNames = $this->configManager->listAll($this->CONFIG_PREFIX);
+    $localeExportFormat = ($this->configFactory->get('bidasoa_keyvalue.settings')->get('format')  != null ) ? $this->configFactory->get('bidasoa_keyvalue.settings')->get('format'): 'default';
 
     $configCache = \Drupal::service('cache.config');
     $configCache->invalidateAll();
-    $output = [];
     $currentLanguage = $this->languageManager->getConfigOverrideLanguage();
     $language = $this->languageManager->getLanguage($this->options['langcode']);
     $this->languageManager->setConfigOverrideLanguage($language);
+    $output = match ($localeExportFormat) {
+      "i18next" => $this->i18nextFormat($configNames),
+      default => $this->defaultFormat($configNames),
+    };
+
+    $this->languageManager->setConfigOverrideLanguage($currentLanguage);
+    return $output;
+  }
+  protected function defaultFormat($configNames){
+    $output = [];
     foreach($configNames as $name){
-      //Cache::invalidateTags([$name]);
-      $configFactory->reset($name);
-      $config = $configManager->read($name);
+      $this->configFactory->reset($name);
+      $config = $this->configManager->read($name);
       /* @var \Drupal\Core\Config\Entity\ConfigEntityInterface $translatedConfigEntity */
       $translatedConfigEntity = $this->entityTypeManager
         ->getStorage('keyvalue')
         ->load($config['id']);
       $output[strtolower($config['id'])] = $translatedConfigEntity->get('label');
     }
-    $this->languageManager->setConfigOverrideLanguage($currentLanguage);
+    return $output;
+  }
+
+  protected function i18nextFormat($configNames){
+    $output = [];
+    foreach($configNames as $key){
+      $config = $this->configManager->read($key);
+      $translatedConfigEntity = $this->entityTypeManager
+        ->getStorage('keyvalue')
+        ->load($config['id']);
+
+      $key = str_replace($this->CONFIG_PREFIX . ".", "",$key);
+
+      $temp = &$output;
+      $parts = explode('.', $key);
+
+      $iterator = 0;
+      foreach ( $parts as $part) {
+        $iterator++;
+        if( $iterator == sizeof($parts) ){
+          $temp[$part] = $translatedConfigEntity->get('label');
+        } else {
+          $temp[$part] = [];
+        }
+        $temp = &$temp[$part];  // Update the reference to point to the new sub-array
+      }
+    }
     return $output;
   }
 }

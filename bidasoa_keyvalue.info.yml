@@ -3,6 +3,8 @@ type: module
 description: 'Adds key-value translatable config entity'
 package: Bidasoa
 core_version_requirement: ^8 || ^9 || ^10
+configure: bidasoa_keyvalue.settings
 dependencies:
   - bidasoa_admin:bidasoa_admin
+  - static_suite:static_export
   - hook_event_dispatcher:core_event_dispatcher

@@ -35,3 +35,10 @@ entity.keyvalue.delete_form:
     _entity_form: keyvalue.delete
   requirements:
     _entity_access: keyvalue.delete
+bidasoa_keyvalue.settings:
+  path: '/admin/config/static/export/locale/settings/keyvalue'
+  defaults:
+    _title: 'KeyValue exporter settings'
+    _form: Drupal\bidasoa_keyvalue\Form\KeyValueExporterConfigForm
+  requirements:
+    _permission: 'administer site configuration'
