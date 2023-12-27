@@ -174,7 +174,7 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
         if( $iterator == sizeof($parts) ){
           $temp[$part] = $translatedConfigEntity->get('label');
         } else {
-          $temp[$part] = [];
+          $temp[$part] = empty($temp[$part]) ? [] : $temp[$part];
         }
         $temp = &$temp[$part];  // Update the reference to point to the new sub-array
       }
