@@ -2,7 +2,7 @@ name: KeyValue Translation support
 type: module
 description: 'Adds key-value translatable config entity'
 package: Bidasoa
-core_version_requirement: ^8 || ^9 || ^10
+core_version_requirement: ^9 || ^10
 configure: bidasoa_keyvalue.settings
 dependencies:
   - bidasoa_admin:bidasoa_admin

@@ -1,0 +1,6 @@
+services:
+  bidasoa_keyvalue.drush.commands:
+    class: \Drupal\bidasoa_keyvalue\Commands\BidasoaKeyvalueDrushCommands
+    arguments: ['@bidasoa_keyvalue.import']
+    tags:
+      - { name: drush.command }
