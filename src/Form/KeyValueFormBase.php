@@ -54,6 +54,7 @@ class KeyValueFormBase extends EntityForm {
     // Get anything we need from the base class.
     $form = parent::buildForm($form, $form_state);
 
+    /** @var \Drupal\Core\Entity\EntityInterface $keyvalue */
     $keyvalue = $this->entity;
 
     // Build the form.
@@ -61,17 +62,23 @@ class KeyValueFormBase extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#maxlength' => 1020,
-      '#default_value' => $keyvalue->label(),
+      '#default_value' => $keyvalue->label() ?? NULL,
       '#required' => TRUE,
     ];
     $form['id'] = [
       '#type' => 'machine_name',
       '#title' => $this->t('Key'),
-      '#default_value' => $keyvalue->id(),
+      '#default_value' => $keyvalue->id() ?? NULL,
       '#machine_name' => [
+        'source' => ['label'],
         'exists' => [$this, 'exists'],
         'replace_pattern' => '([^aA-zZ0-9_\.]+)|(^custom$)',
         'error' => 'The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores. Additionally, it can not be the reserved word "custom".',
+      ],
+      '#wrapper_attributes' => [
+        'style' => [
+          'display: block;',
+        ],
       ],
       '#disabled' => !$keyvalue->isNew(),
     ];
