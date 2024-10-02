@@ -158,7 +158,7 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
   protected function i18nextFormat($configNames){
     $output = [];
     foreach($configNames as $key){
-      $this->configFactory->reset($name);
+      $this->configFactory->reset($key);
       $config = $this->configManager->read($key);
       $translatedConfigEntity = $this->entityTypeManager
         ->getStorage('keyvalue')
