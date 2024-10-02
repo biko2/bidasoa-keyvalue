@@ -5,7 +5,7 @@
 ![by Salmoncrafters.dev](https://raw.githubusercontent.com/biko2/biko-repo-bagdes/master/png/salmoncrafters.dev.png)
 
 ## Install
-- `composer install biko2/bidasoa_keyvalue`
+- `composer require biko2/bidasoa_keyvalue`
 
 ## Features:
 - Key/value literal translations
