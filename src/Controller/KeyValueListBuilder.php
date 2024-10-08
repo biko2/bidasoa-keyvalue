@@ -66,7 +66,7 @@ class KeyValueListBuilder extends ConfigEntityListBuilder {
    *   Renderable array.
    */
   public function render() {
-    $build[] = $this->renderSearchForm();
+    //$build[] = $this->renderSearchForm(); //Disabled for now.
     $build[] = parent::render();
     return $build;
   }

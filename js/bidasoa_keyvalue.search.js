@@ -1,7 +1,7 @@
 (function ($, Drupal) {
   Drupal.behaviors.BidasoaKeyValue = {
     attach: function attach(context) {
-      $('.form-element--type-search').once('bidasoa_keyvalue.search').keyup(function(element){
+      $(once('bidasoa_keyvalue.search', '.form-element--type-search', context)).each(function () {
         let keyword =  $(this).val();
         $('tbody tr').each(function(element, index){
           var self = $(this);
