@@ -168,6 +168,10 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
 
       $temp = &$output;
       $parts = explode('.', $key);
+      if($translatedConfigEntity == null){
+        \Drupal::logger("bidasoa_keyvalue")->error("Key not found: " . $key);
+        continue;
+      }
 
       $iterator = 0;
       foreach ( $parts as $part) {
