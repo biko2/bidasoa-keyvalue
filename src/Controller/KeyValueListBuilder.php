@@ -54,7 +54,7 @@ class KeyValueListBuilder extends ConfigEntityListBuilder {
    * @see \Drupal\Core\Entity\EntityListController::render()
    */
   public function buildRow(EntityInterface $entity) {
-    $row['machine_name'] = strtolower($entity->id());
+    $row['machine_name'] = $entity->id();
     $row['label'] = $entity->label();
 
     return $row + parent::buildRow($entity);
