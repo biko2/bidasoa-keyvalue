@@ -127,6 +127,7 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
   protected function calculateDataFromResolver() {
     $configNames = $this->configManager->listAll($this->CONFIG_PREFIX);
     $localeExportFormat = ($this->configFactory->get('bidasoa_keyvalue.settings')->get('format')  != null ) ? $this->configFactory->get('bidasoa_keyvalue.settings')->get('format'): 'default';
+    $lowercaseExport = ($this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key')  != null ) ? $this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key'): FALSE;
 
     $configCache = \Drupal::service('cache.config');
     $configCache->invalidateAll();
@@ -155,7 +156,7 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
     return $output;
   }
 
-  protected function i18nextFormat($configNames){
+  protected function i18nextFormat($configNames, $lowercase = FALSE){
     $output = [];
     foreach($configNames as $key){
       $this->configFactory->reset($key);
@@ -175,6 +176,8 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
 
       $iterator = 0;
       foreach ( $parts as $part) {
+        if($lowercase)
+          $part = strtolower($part);
         $iterator++;
         if( $iterator == sizeof($parts) ){
           $temp[$part] = $translatedConfigEntity->get('label');

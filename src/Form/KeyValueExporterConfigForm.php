@@ -96,8 +96,16 @@ class KeyValueExporterConfigForm extends OutputFormatterDependentConfigFormBase 
       '#description' => $this->t('Format for the exported data.'),
       '#required' => TRUE,
     ];
+    $form['lowercase_key'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Export Keys in lowercase'),
+      '#default_value' => ($config->get('lowercase_key') != null) ?  $config->get('lowercase_key') : FALSE,
+      '#description' => $this->t('Exports key values in the lowercase format.'),
+      '#required' => FALSE,
+    ];
 
-     return parent::buildForm($form, $form_state);
+
+    return parent::buildForm($form, $form_state);
   }
 
   /**
@@ -109,7 +117,9 @@ class KeyValueExporterConfigForm extends OutputFormatterDependentConfigFormBase 
     $config
       ->set('format', $form_state->getValue('format'))
       ->save();
-
+    $config
+      ->set('lowercase_key', $form_state->getValue('lowercase_key'))
+      ->save();
     parent::submitForm($form, $form_state);
   }
 }
