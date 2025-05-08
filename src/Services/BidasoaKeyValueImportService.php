@@ -49,6 +49,7 @@ class BidasoaKeyValueImportService {
 
   protected ConfigFactoryInterface $configFactory;
 
+  protected string $PREFIX = 'bidasoa_keyvalue.keyvalue.';
 
   /**
    * Constructor.
@@ -213,7 +214,7 @@ class BidasoaKeyValueImportService {
           && empty($this->entity_type_manager_keyvalue_storage->loadByProperties(['id' => $id, 'langcode' => $language]))) {
           if($language != \Drupal::languageManager()->getDefaultLanguage()->getId()) {
             /** @var \Drupal\language\Config\LanguageConfigOverride $config_translation */
-            $config_translation = \Drupal::languageManager()->getLanguageConfigOverride($language, $id);
+            $config_translation = \Drupal::languageManager()->getLanguageConfigOverride($language,$this->PREFIX . $id);
             $config_translation->set('label', $keyvalue);
             $config_translation->save();
             $results['translated']++;
