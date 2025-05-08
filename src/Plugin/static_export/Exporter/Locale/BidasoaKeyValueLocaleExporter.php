@@ -135,7 +135,7 @@ class BidasoaKeyValueLocaleExporter extends LocaleExporterPluginBase {
     $language = $this->languageManager->getLanguage($this->options['langcode']);
     $this->languageManager->setConfigOverrideLanguage($language);
     $output = match ($localeExportFormat) {
-      "i18next" => $this->i18nextFormat($configNames),
+      "i18next" => $this->i18nextFormat($configNames,$lowercaseExport),
       default => $this->defaultFormat($configNames),
     };
 

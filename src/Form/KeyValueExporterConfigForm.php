@@ -98,9 +98,9 @@ class KeyValueExporterConfigForm extends OutputFormatterDependentConfigFormBase 
     ];
     $form['lowercase_key'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Export Keys in lowercase'),
+      '#title' => $this->t('Keys in lowercase'),
       '#default_value' => ($config->get('lowercase_key') != null) ?  $config->get('lowercase_key') : FALSE,
-      '#description' => $this->t('Exports key values in the lowercase format.'),
+      '#description' => $this->t('Uses only lowercase keys.'),
       '#required' => FALSE,
     ];
 

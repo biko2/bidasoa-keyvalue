@@ -91,6 +91,10 @@ class BidasoaKeyvalueDrushCommands extends DrushCommands {
             $result_log .= '@already have not been imported because they already exist, ';
             break;
 
+          case 'translated':
+            $result_log .= '@translated have been translated, ';
+            break;
+
           case 'error':
             $result_log .= '@error have not been imported because an error occurred, for more information see the process log, ';
             break;
@@ -100,7 +104,7 @@ class BidasoaKeyvalueDrushCommands extends DrushCommands {
         $result_log .= 'Nothing has been imported';
       }
 
-      $this->logger()->success(dt(preg_replace('/, $/', '', $result_log), ['@success' => $results['success'], '@already' => $results['already'], '@error' => $results['error']]));
+      $this->logger()->success(dt(preg_replace('/, $/', '', $result_log), ['@success' => $results['success'], '@already' => $results['already'], '@error' => $results['error'], '@translated' => $results['translated']]));
     }
     catch (\Exception $e) {
       $this->logger()->error(dt('Error found: @e', ['@e' => $e]));

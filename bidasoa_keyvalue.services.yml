@@ -12,7 +12,7 @@ services:
 
   bidasoa_keyvalue.import:
     class: Drupal\bidasoa_keyvalue\Services\BidasoaKeyValueImportService
-    arguments: ['@language_manager', '@entity_type.manager']
+    arguments: ['@language_manager', '@entity_type.manager','@config.factory']
 
   bidasoa_keyvalue.translator:
     class: Drupal\bidasoa_keyvalue\Services\BidasoaKeyValueTranslatorService

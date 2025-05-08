@@ -53,6 +53,9 @@ class KeyValueFormBase extends EntityForm {
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Get anything we need from the base class.
     $form = parent::buildForm($form, $form_state);
+    if($this->configFactory == null)
+      $this->configFactory = \Drupal::configFactory();
+    $lowercase = ($this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key')  != null ) ? $this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key'): FALSE;
 
     /** @var \Drupal\Core\Entity\EntityInterface $keyvalue */
     $keyvalue = $this->entity;
@@ -72,7 +75,7 @@ class KeyValueFormBase extends EntityForm {
       '#machine_name' => [
         'source' => ['label'],
         'exists' => [$this, 'exists'],
-        'replace_pattern' => '([^aA-zZ0-9_\.]+)|(^custom$)',
+        'replace_pattern' => ($lowercase) ? '([^a-z0-9_\.]+)|(^custom$)':'([^aA-zZ0-9_\.]+)|(^custom$)',
         'error' => 'The machine-readable name must be unique, and can only contain lowercase letters, numbers, and underscores. Additionally, it can not be the reserved word "custom".',
       ],
       '#wrapper_attributes' => [
@@ -105,7 +108,7 @@ class KeyValueFormBase extends EntityForm {
     $query = $this->entityStorage->getQuery();
 
     // Query the entity ID to see if its in use.
-    $result = $query->condition('id', $element['#field_prefix'] . $entity_id)
+    $result = $query->condition('LOWER(id)', strtolower($element['#field_prefix'] . $entity_id))
       ->execute();
 
     // We don't need to return the ID, only if it exists or not.

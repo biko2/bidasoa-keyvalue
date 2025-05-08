@@ -2,6 +2,8 @@
 
 namespace Drupal\bidasoa_keyvalue\Controller;
 
+use Drupal\Core\Config\CachedStorage;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -24,6 +26,9 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
    */
   protected $formBuilder;
 
+  protected ConfigFactoryInterface $configFactory;
+
+
   /**
    * Constructs a new BlockListBuilder object.
    *
@@ -34,9 +39,10 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   The form builder.
    */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, FormBuilderInterface $form_builder) {
+  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, FormBuilderInterface $form_builder, ConfigFactoryInterface $config_factory) {
     parent::__construct($entity_type, $storage);
     $this->formBuilder = $form_builder;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -47,6 +53,7 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
       $entity_type,
       $container->get('entity_type.manager')->getStorage($entity_type->id()),
       $container->get('form_builder'),
+      $container->get('config.factory')
     );
   }
 
@@ -71,7 +78,7 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
 
       // Filtra las entidades por el termino de búsqueda.
       $entities = array_filter($entities, function($entity) use ($search) {
-        return stripos($entity->label(), $search) !== FALSE ||  stripos($entity->id(), $search);
+        return stripos($entity->label(), $search) !== FALSE ||  stripos($entity->id(), $search) !== FALSE ;
       });
     }
 
@@ -91,6 +98,8 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
       $this->t('Key');
     $header['label'] =
       $this->t('Label');
+    $header['label_en'] =
+      $this->t('Label EN');
     return $header + parent::buildHeader();
   }
 
@@ -106,8 +115,14 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
    * @see \Drupal\Core\Entity\EntityListController::render()
    */
   public function buildRow(EntityInterface $entity) {
-    $row['machine_name'] = $entity->id();
+    $lowerCase = ($this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key')  != null ) ? $this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key'): FALSE;
+
+    $row['machine_name'] = ($lowerCase) ? strtolower($entity->id()) :  $entity->id();
     $row['label'] = $entity->label();
+
+    $translated_en = \Drupal::languageManager()->getLanguageConfigOverride("en", $entity->id());
+
+    $row['label_en'] = $translated_en->get("label");
 
     return $row + parent::buildRow($entity);
   }

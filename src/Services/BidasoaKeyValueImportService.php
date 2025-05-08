@@ -2,7 +2,9 @@
 
 namespace Drupal\bidasoa_keyvalue\Services;
 
+use Drupal;
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Language\LanguageInterface;
@@ -45,6 +47,9 @@ class BidasoaKeyValueImportService {
    */
   protected $entity_type_manager_keyvalue_storage;
 
+  protected ConfigFactoryInterface $configFactory;
+
+
   /**
    * Constructor.
    *
@@ -53,11 +58,12 @@ class BidasoaKeyValueImportService {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity type manager.
    */
-  public function __construct(LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager, ConfigFactoryInterface $configFactory) {
     $this->language_manager = $languageManager;
     $this->entity_type_manager = $entityTypeManager;
     $this->entity_type_manager_keyvalue_storage = $entityTypeManager->getStorage('keyvalue');
     $this->entity_type_manager_keyvalue_query = $this->entity_type_manager_keyvalue_storage->getQuery();
+    $this->configFactory = $configFactory;
   }
 
   /**
@@ -183,14 +189,16 @@ class BidasoaKeyValueImportService {
    *   Operation results.
    */
   public function importKeyValues(array $keyvalues, LanguageInterface|string $language): array {
-    $results['success'] = $results['already'] = $results['error'] = 0;
+    $results['success'] = $results['already'] = $results['error'] = $results['translated'] = 0;
 
     $language = $this->getLangcodeFromLanguage($language);
     if (!is_string($language)) {
       throw new \Exception('The provided language for importing the KeyValues is not valid.');
     }
-
+    $lowerCase = $this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_keyvalues') || False;
     foreach ($keyvalues as $id => $keyvalue) {
+      if($lowerCase)
+        $id = strtolower($id);
       try {
         if (!is_string($keyvalue)) {
           $this->logger()->error('Error found: Keyvalue is not a string');
@@ -203,11 +211,17 @@ class BidasoaKeyValueImportService {
         }
         if (!empty($this->entity_type_manager_keyvalue_storage->loadByProperties(['id' => $id]))
           && empty($this->entity_type_manager_keyvalue_storage->loadByProperties(['id' => $id, 'langcode' => $language]))) {
-          // ToDo: Implement a system for creating translations.
-          continue;
+          if($language != \Drupal::languageManager()->getDefaultLanguage()->getId()) {
+            /** @var \Drupal\language\Config\LanguageConfigOverride $config_translation */
+            $config_translation = \Drupal::languageManager()->getLanguageConfigOverride($language, $id);
+            $config_translation->set('label', $keyvalue);
+            $config_translation->save();
+            $results['translated']++;
+          }
+        } else {
+          (!empty($this->createKeyValue($id, $keyvalue, $language))) ? $results['success']++ : $results['error']++;
         }
 
-        (!empty($this->createKeyValue($id, $keyvalue, $language))) ? $results['success']++ : $results['error']++;
       }
       catch (\Exception $e) {
         $this->logger()->error('Error found: @e', ['@e' => $e]);
@@ -236,10 +250,11 @@ class BidasoaKeyValueImportService {
     if (!is_string($language)) {
       throw new \Exception('The provided language for cerating the KeyValue is not valid.');
     }
+    $lowercase = ($this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key')  != null ) ? $this->configFactory->get('bidasoa_keyvalue.settings')->get('lowercase_key'): FALSE;
 
     try {
       $keyvalue = $this->entity_type_manager_keyvalue_storage->create([
-        'id' => $id,
+        'id' => ($lowercase) ? strtolower($id) : $id,
         'label' => $keyvalue,
         'langcode' => $language,
       ]);
