@@ -72,6 +72,7 @@ class KeyValueFormBase extends EntityForm {
       '#type' => 'machine_name',
       '#title' => $this->t('Key'),
       '#default_value' => $keyvalue->id() ?? NULL,
+      '#maxlength' => 229,
       '#machine_name' => [
         'source' => ['label'],
         'exists' => [$this, 'exists'],
