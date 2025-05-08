@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  */
 class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterface {
+  protected string $PREFIX = 'bidasoa_keyvalue.keyvalue.';
 
   /**
    * The form builder.
@@ -120,7 +121,7 @@ class KeyValueListBuilder extends ConfigEntityListBuilder implements FormInterfa
     $row['machine_name'] = ($lowerCase) ? strtolower($entity->id()) :  $entity->id();
     $row['label'] = $entity->label();
 
-    $translated_en = \Drupal::languageManager()->getLanguageConfigOverride("en", $entity->id());
+    $translated_en = \Drupal::languageManager()->getLanguageConfigOverride("en", $this->PREFIX .$entity->id());
 
     $row['label_en'] = $translated_en->get("label");
 
