@@ -45,7 +45,7 @@ class BidasoaKeyValueImportService {
    *
    * @var \Drupal\Core\Config\Entity\ConfigEntityStorage
    */
-  protected $entity_type_manager_keyvalue_storage;
+  public $entity_type_manager_keyvalue_storage;
 
   protected ConfigFactoryInterface $configFactory;
 
@@ -246,7 +246,7 @@ class BidasoaKeyValueImportService {
    * @return mixed
    *   KeyValue.
    */
-  protected function createKeyValue(string $id, string $keyvalue, LanguageInterface|string $language): mixed {
+  public function createKeyValue(string $id, string $keyvalue, LanguageInterface|string $language): mixed {
     $language = $this->getLangcodeFromLanguage($language);
     if (!is_string($language)) {
       throw new \Exception('The provided language for cerating the KeyValue is not valid.');
